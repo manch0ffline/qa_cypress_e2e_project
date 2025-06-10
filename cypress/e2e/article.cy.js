@@ -23,6 +23,7 @@ describe('Article', () => {
       .then(() => cy.task('generateUser'))
       .then((generatedUser) => {
         user = generatedUser;
+
         return cy.register(user.email, user.username, user.password);
       })
       .then(() => cy.task('generateArticle'))
@@ -65,7 +66,7 @@ describe('Article', () => {
   it('should be deleted using Delete button', () => {
     cy.login(user.email, user.password);
 
-    cy.createArticle(article.title, article.description, article.body);
+    cy.createArticle(article);
 
     // articlePage.chekProfileUsername(username);
     homePage.assertHeaderContainUsername(user.username);

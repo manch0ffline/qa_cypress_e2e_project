@@ -5,11 +5,7 @@ declare namespace Cypress {
     getByDataCy(selector: string): Chainable<any>;
     getByPlaceholder(placeholder: string): Chainable<any>;
     register(email: string, username: string, password: string): Chainable<any>;
-    createArticle(
-      title: string,
-      description: string,
-      body: string
-    ): Chainable<any>;
+    createArticle(article: any): Chainable<any>;
     login(email: string, username: string, password: string): Chainable<any>;
   }
 }
