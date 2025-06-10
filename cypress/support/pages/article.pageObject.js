@@ -28,7 +28,7 @@ class ArticlePageObject extends PageObject {
   }
 
   typeBody(bodyText) {
-    this.titleInput.type(bodyText);
+    this.bodyInput.type(bodyText);
   }
 
   typeTags(tags) {

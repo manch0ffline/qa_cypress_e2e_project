@@ -1,6 +1,7 @@
 /// <reference types='cypress' />
 /// <reference types='../support' />
 
+import faker from 'faker';
 import ArticlePageObject from '../support/pages/article.pageObject';
 import HomePageObject from '../support/pages/home.pageObject';
 
@@ -10,14 +11,21 @@ describe('Article', () => {
   let user;
   let article;
 
+  const editedArticle = {
+    title: faker.lorem.sentence(),
+    description: faker.lorem.sentence(),
+    body: faker.lorem.paragraph()
+  };
+
   beforeEach(() => {
     cy.visit('/');
     cy.task('db:clear')
       .then(() => cy.task('generateUser'))
       .then((generatedUser) => {
         user = generatedUser;
-        return cy.task('generateArticle');
+        return cy.register(user.email, user.username, user.password);
       })
+      .then(() => cy.task('generateArticle'))
       .then((generatedArticle) => {
         article = generatedArticle;
       });
@@ -33,68 +41,41 @@ describe('Article', () => {
     cy.contains('h1', `Article title: ${article.title}`).should('be.visible');
   });
 
-  // it.only('should be created using New Article form', function () {
-  //   cy.get('@user').then(({ email, username, password }) => {
-  //     cy.login(email, username, password);
-  //     articlePage.visit();
+  it('should edit an article', () => {
+    cy.login(user.email, user.password);
+    articlePage.visitArticle(article.slug);
 
-  //     cy.get('@article').then(({ title, description, body }) => {
-  //       cy.createArticle(title, description, body);
+    articlePage.editButton.click();
+    articlePage.clearTitle();
+    articlePage.typeTitle(editedArticle.title);
+    articlePage.clearDescription();
+    articlePage.typeDescription(editedArticle.description);
+    articlePage.clearBody();
+    articlePage.typeBody(editedArticle.body);
+    articlePage.updateArticleButton.click();
 
-  //       homePage.assertHeaderContainUsername(username);
-  //       cy.contains('h1', `Article title: ${title}`).should('be.visible');
-  //     });
-  //   });
-  // });
-
-  it('should be edited using Edit button', () => {
-    cy.get('@user').then(({ email, username, password }) => {
-      cy.login(email, username, password);
-
-      cy.get('@article').then(({ title, description, body }) => {
-        cy.createArticle(title, description, body);
-
-        // articlePage.chekProfileUsername(username);
-        homePage.assertHeaderContainUsername(username);
-
-        // Editing
-        cy.contains('h1', `Article title: ${title}`).click();
-
-        cy.contains('a', `Edit Article`).click();
-
-        articlePage.titleInput().clear();
-        articlePage.typeTitle('Edited Title');
-
-        articlePage.descriptionInput().clear();
-        articlePage.typeDescription('Edited Description');
-
-        articlePage.bodyInput().clear();
-        articlePage.typeBody('Edited Body');
-
-        articlePage.clickOnUpdateBtn();
-        cy.contains('h1', `Edited Title`).should('be.visible');
-      });
-    });
+    cy.location('pathname').should(
+      'include',
+      editedArticle.title.toLowerCase().replace(/ /g, '-')
+    );
+    cy.contains(editedArticle.title);
+    cy.contains(editedArticle.body);
   });
 
   it('should be deleted using Delete button', () => {
-    cy.get('@user').then(({ email, username, password }) => {
-      cy.login(email, username, password);
+    cy.login(user.email, user.password);
 
-      cy.get('@article').then(({ title, description, body }) => {
-        cy.createArticle(title, description, body);
+    cy.createArticle(article.title, article.description, article.body);
 
-        // articlePage.chekProfileUsername(username);
-        homePage.assertHeaderContainUsername(username);
-        cy.contains('h1', `Article title: ${title}`).should('be.visible');
+    // articlePage.chekProfileUsername(username);
+    homePage.assertHeaderContainUsername(user.username);
+    cy.contains('h1', `Article title: ${article.title}`).should('be.visible');
 
-        // Deleting
-        cy.get('a[class="preview-link"]')
-          .contains('h1', `Article title: ${title}`)
-          .click();
+    // Deleting
+    cy.get('a[class="preview-link"]')
+      .contains('h1', `Article title: ${article.title}`)
+      .click();
 
-        cy.contains('button', 'Delete Article').click();
-      });
-    });
+    cy.contains('button', 'Delete Article').click();
   });
 });

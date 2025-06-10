@@ -8,7 +8,6 @@ describe('Sign Up page', () => {
   let user;
   const signUpPage = new SignUpPageObject();
   const homePage = new HomePageObject();
-  const signUp = new SignUpPageObject();
 
   before(() => {
     cy.visit('/');
@@ -19,7 +18,7 @@ describe('Sign Up page', () => {
   });
 
   it('should provide the ability to register for a non-existent user', () => {
-    signUp.launchRegistrationPage();
+    signUpPage.launchRegistrationPage();
 
     signUpPage.typeUsername(user.username);
     signUpPage.typeEmail(user.email);
@@ -30,7 +29,7 @@ describe('Sign Up page', () => {
   });
 
   it('should not register if no username is entered', () => {
-    signUp.launchRegistrationPage();
+    signUpPage.launchRegistrationPage();
 
     signUpPage.typeEmail(user.email);
     signUpPage.typePassword(user.password);
@@ -42,7 +41,7 @@ describe('Sign Up page', () => {
   });
 
   it('should not register if email is not entered', () => {
-    signUp.launchRegistrationPage();
+    signUpPage.launchRegistrationPage();
 
     signUpPage.typeUsername(user.username);
     signUpPage.typePassword(user.password);
@@ -54,7 +53,7 @@ describe('Sign Up page', () => {
   });
 
   it('should not register if no password is entered', () => {
-    signUp.launchRegistrationPage();
+    signUpPage.launchRegistrationPage();
 
     signUpPage.typeUsername(user.username);
     signUpPage.typeEmail(user.email);
